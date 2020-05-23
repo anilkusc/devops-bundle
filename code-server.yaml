@@ -1,0 +1,59 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: codeserver
+spec:
+  selector:
+    app: codeserver
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codeserver
+  labels:
+    app: codeserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codeserver
+  template:
+    metadata:
+      labels:
+        app: codeserver
+    spec:
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: codeserver
+        image: codercom/code-server
+        ports:
+        - containerPort: 8080
+          name: ui
+        volumeMounts:
+        - name: config
+          mountPath: /root/.config/code-server/config.yaml
+          subPath: config.yaml
+      volumes:
+        - name: config
+          configMap:
+            name: codeserver-config
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: codeserver-config
+  labels:
+    app: codeserver
+data:
+  config.yaml: |-
+    bind-addr: 127.0.0.1:8080
+    auth: password
+    password: admin
+    cert: false
+---

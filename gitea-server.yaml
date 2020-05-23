@@ -1,0 +1,42 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: gitea
+  labels:
+    app: gitea
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+    name: web
+  - port: 22
+    name: ssh
+  selector:
+    app: gitea
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+  labels:
+    app: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - name: gitea
+        image: gitea/gitea
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+          name: web
+        - containerPort: 22
+          name: ssh
+# root user is created first user!
