@@ -1,0 +1,63 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: registry
+  labels:
+    app: registry
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    name: web
+  - port: 5000
+    name: ssh
+  selector:
+    app: registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry
+  labels:
+    app: registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry
+  template:
+    metadata:
+      labels:
+        app: registry
+    spec:
+      containers:
+      - name: registry
+        image: registry:2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: registry
+        env:
+        - name: TZ
+          value: "Europe/Istanbul"
+      - name: ui
+        image: joxit/docker-registry-ui:static
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: web
+        env:
+        - name: REGISTRY_URL
+          value: "http://registry.default.svc.cluster.local:5000"          
+        - name: DELETE_IMAGES
+          value: "true"          
+        - name: REGISTRY_TITLE
+          value: "tests"          
+#        volumeMounts:
+#        - name: data
+#          mountPath: /data/
+#      volumes:
+#        - name: data
+#          hostPath:
+#            path: /volumes/gitea/
+# root user is first user created!

@@ -39,4 +39,14 @@ spec:
           name: web
         - containerPort: 22
           name: ssh
-# root user is created first user!
+        env:
+        - name: TZ
+          value: "Europe/Istanbul"
+        volumeMounts:
+        - name: data
+          mountPath: /data/
+      volumes:
+        - name: data
+          hostPath:
+            path: /volumes/gitea/
+# root user is first user created!
