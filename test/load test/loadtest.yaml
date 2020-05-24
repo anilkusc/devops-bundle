@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: unittest
+spec:
+  template:
+    spec:
+      containers:
+      - name: unittest
+        image: anilkuscu95/unittest
+      restartPolicy: Never
+  backoffLimit: 2
