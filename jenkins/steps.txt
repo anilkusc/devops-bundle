@@ -1,0 +1,8 @@
+install docker,gitea,blueocean,locale plugin in jenkins
+manage->jenkins->configure system->locale -> default language = en
+credentials->jenkins(Stores scoped to Jenkins section)->Global credentials(unrestricted)->Add Credentials(on the left)-> username:<dockerusername>,password:<dockerpassword>,ıd:<will_be_used_in_jenkinsfile>
+manage->jenkins->configure system->gitea -> server url http://gitea.default.svc.cluster.local:3000(check tickbox for manage hooks)
+open blue ocean -> new pipeline -> git -> gitea git address -> create -> add 1 fake steps for jenkinsfile
+first run will start and will be failed.
+go to gitea repo -> settings -> webhooks -> add webhook -> gitea
+target url = http://jenkins.default.svc.cluster.local:8080/gitea-webhook/post?job=<your_job_name_in_jenkins>

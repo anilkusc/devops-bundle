@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jenkins-master-svc
+  name: jenkins
   labels:
-    app: jenkins-master
+    app: jenkins
 spec:
   type: NodePort
   ports:
@@ -14,27 +14,31 @@ spec:
     targetPort: 50000
     name: slave
   selector:
-    app: jenkins-master
+    app: jenkins
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jenkins-master
+  name: jenkins
   labels:
-    app: jenkins-master
+    app: jenkins
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jenkins-master
+      app: jenkins
   template:
     metadata:
       labels:
-        app: jenkins-master
+        app: jenkins
     spec:
       containers:
-      - name: jenkins-leader
-        image: jenkins/jenkins:lts
+      - name: jenkins
+        image: anilkuscu/jenkins #jenkins/jenkins:lts
+        imagePullPolicy: Never
+        env:
+        - name: TZ
+          value: "Europe/Istanbul"        
         ports:
           - name: http-port
             containerPort: 8080
@@ -43,7 +47,12 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/jenkins_home
+        - name: docker
+          mountPath: /var/run/docker.sock
       volumes:
         - name: data
           hostPath:
-            path: /volumes/jenkins/ # must chmod 777
+            path: /volumes/jenkins/ # must chmod 777 on host machine
+        - name: docker
+          hostPath:
+            path: /var/run/docker.sock # must chmod 777 on host machine
