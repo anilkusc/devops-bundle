@@ -42,6 +42,15 @@ spec:
           value: "Europe/Istanbul"
         - name: REGISTRY_STORAGE_DELETE_ENABLED
           value: "true"
+        - name: REGISTRY_AUTH
+          value: "htpasswd"
+        - name: REGISTRY_AUTH_HTPASSWD_REALM
+          value: "Registry Realm"
+        - name: REGISTRY_AUTH_HTPASSWD_PATH # buradaki şifre arayüzde de geçerli.
+          value: "/var/lib/registry/registry.password" # htpasswd -Bc registry.password testuser komutu ile oluşturulan şifreyi auth olarak alır.
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/registry
       - name: ui
         image: joxit/docker-registry-ui:static
         imagePullPolicy: IfNotPresent
@@ -54,13 +63,10 @@ spec:
         - name: DELETE_IMAGES
           value: "true"
         - name: REGISTRY_TITLE
-          value: "tests"
-        volumeMounts:
-        - name: data
-          mountPath: /var/lib/registry
+          value: "Registry"
       volumes:
-        - name: data
-          hostPath:
-            path: /volumes/registry/
+      - name: data
+        hostPath:
+          path: /volumes/registry/
 #TODO:Add authentication to ui
 #TODO:garbage collector cron : registry garbage-collect /etc/docker/registry/config.yml

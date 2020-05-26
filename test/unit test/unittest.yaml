@@ -1,12 +1,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: unittest
+  name: test
 spec:
   template:
+    metadata:
+      name: test
     spec:
       containers:
-      - name: unittest
-        image: anilkuscu95/unittest
+      - name: test
+        image: 192.168.1.50:30014/test
       restartPolicy: Never
-  backoffLimit: 2
+      imagePullSecrets:
+      - name: regcred
